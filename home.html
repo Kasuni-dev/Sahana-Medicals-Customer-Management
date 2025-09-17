@@ -1,0 +1,1012 @@
+<?php
+session_start();
+// Check if user is logged in
+$is_logged_in = isset($_SESSION['user_id']);
+$user_name = $is_logged_in ? $_SESSION['user_name'] : '';
+$user_role = $is_logged_in ? $_SESSION['user_role'] : '';
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Sahana Medicals</title>
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header Styles */
+        .top-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-contact {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header-contact span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-size: 2.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4a69bd, #1e3799);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.8rem;
+            color: #666;
+            margin-left: -10px;
+            letter-spacing: 4px;
+            font-weight: 300;
+        }
+
+        .navbar-nav .nav-link {
+            color: #2c3e50 !important;
+            font-weight: 600;
+            margin: 0 15px;
+            font-size: 1.1rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #4a69bd !important;
+            transform: translateY(-2px);
+        }
+
+        .navbar-nav .nav-link.active {
+            color: #4a69bd !important;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background: linear-gradient(135deg, #4a69bd, #1e3799);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar-nav .nav-link:hover::after,
+        .navbar-nav .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* User welcome message */
+        .user-welcome {
+            background: linear-gradient(135deg, #4a69bd, #1e3799);
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        .user-welcome.show {
+            display: block;
+        }
+
+        /* Cart/Wishlist Icons */
+        .nav-icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .nav-icon {
+            color: #2c3e50 !important;
+            font-size: 1.3rem;
+            position: relative;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .nav-icon:hover {
+            color: #4a69bd !important;
+            transform: scale(1.1);
+        }
+
+        .cart-count,
+        .wishlist-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(74, 105, 189, 0.9), rgba(30, 55, 153, 0.9)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><defs><pattern id="medical" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="1200" height="600" fill="url(%23medical)"/></svg>');
+            background-size: cover;
+            background-position: center;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .btn-hero {
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary-hero {
+            background: linear-gradient(45deg, #0b4fae, #6b92c2);
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary-hero {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-hero:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Floating Elements for visual interest */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            right: 15%;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4a69bd, #1e3799);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card:hover::before {
+            left: 0;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4a69bd, #1e3799);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(74, 105, 189, 0.3);
+        }
+
+        .feature-card h4 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+
+        .service-item {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .service-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .service-item i {
+            font-size: 3rem;
+            color: #4a69bd;
+            margin-bottom: 20px;
+        }
+
+        .service-item h5 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .service-item p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 0;
+            background: #2c3e50;
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #4a69bd;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(12, 52, 109, 0.9), rgba(28, 104, 180, 0.9));
+            color: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px 0 15px 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section h4 {
+            color: #4a69bd;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .footer-section p,
+        .footer-section li {
+            color: #bdc3c7;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li a {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: #4a69bd;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: #4a69bd;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* Accessibility: Focus styles for keyboard navigation */
+        a:focus,
+        button:focus {
+            outline: 2px solid #4a69bd;
+            outline-offset: 2px;
+        }
+
+        /* Skip to main content link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #4a69bd;
+            color: white;
+            padding: 8px;
+            z-index: 10000;
+            transition: top 0.3s;
+            text-decoration: none;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section-title h2 {
+                font-size: 2.2rem;
+            }
+
+            .navbar-brand {
+                font-size: 2rem;
+            }
+
+            .header-contact {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .nav-icons {
+                margin-left: 10px;
+            }
+
+            /* Improved mobile navigation */
+            .navbar-collapse {
+                background: rgba(255, 255, 255, 0.98);
+                padding: 20px;
+                border-radius: 0 0 10px 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- User Welcome Message -->
+    <?php if ($is_logged_in): ?>
+    <div class="user-welcome show">
+        Welcome back, <?php echo htmlspecialchars($user_name); ?>! 
+        <?php if ($user_role === 'admin'): ?>
+            <a href="admin_dashboard.php" style="color: #fff; text-decoration: underline; margin-left: 15px;">Go to Admin Dashboard</a>
+        <?php endif; ?>
+        <a href="logout.php" style="color: #fff; text-decoration: underline; margin-left: 15px;">Logout</a>
+    </div>
+    <?php endif; ?>
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <div class="navbar-brand-wrapper">
+                <a class="navbar-brand" href="home.php">SAHANA</a>
+                <div class="brand-subtitle">MEDICALS</div>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.php">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about_us.php">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact_us.php">Contact Us</a>
+                    </li>
+                    <?php if ($is_logged_in): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="dashboard.php"><i class="fas fa-user"></i> My Account</a>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php"><i class="fas fa-user"></i> Login</a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+
+                <div class="nav-icons">
+                    <a href="#" class="nav-icon" title="Wishlist">
+                        <i class="fas fa-heart"></i>
+                        <span class="wishlist-count">0</span>
+                    </a>
+                    <a href="cart.php" class="nav-icon" title="Cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section - Main marketing message -->
+    <section class="hero" id="main-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="hero-content">
+                        <h1>Your Health, Our Priority</h1>
+                        <p>Experience premium healthcare services with Sahana Medicals. Quality medicines, expert
+                            consultation, and doorstep delivery - all at your fingertips.</p>
+                        <div class="hero-buttons">
+                            <a href="shop.php" class="btn-hero btn-primary-hero">Shop Now</a>
+                            <a href="#services" class="btn-hero btn-secondary-hero">Our Services</a>
+                            <?php if (!$is_logged_in): ?>
+                                <a href="login.php" class="btn-hero btn-secondary-hero">Login / Register</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section - Key value propositions -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Why Choose Sahana Medicals?</h2>
+                <p>We provide comprehensive healthcare solutions with a commitment to excellence and your well-being</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <h4>Fast Delivery</h4>
+                        <p>Get your medicines delivered to your doorstep within hours. We ensure quick and safe delivery
+                            across the city.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Quality Assured</h4>
+                        <p>All our medicines are sourced from certified manufacturers and undergo strict quality checks
+                            for your safety.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h4>Expert Consultation</h4>
+                        <p>Get professional medical advice from our team of qualified pharmacists and healthcare <br>
+                            experts.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>24/7 Service</h4>
+                        <p>Round-the-clock availability for emergency medicines and healthcare support whenever you need
+                            it.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <h4>Best Prices</h4>
+                        <p>Competitive pricing on all medicines with regular discounts and special offers for our valued
+                            customers.</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4>Easy Ordering</h4>
+                        <p>Simple online ordering process with prescription upload facility and multiple payment <br>
+                            options.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section - Offered services -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>Our Services</h2>
+                <p>Comprehensive healthcare solutions tailored to meet all your medical needs</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-3 col-md-6">
+                    <div class="service-item text-center">
+                        <i class="fas fa-pills"></i>
+                        <h5>Online Pharmacy</h5>
+                        <p>Wide range of medicines available online with easy ordering</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="service-item text-center">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                        <h5>Prescription Upload</h5>
+                        <p>Upload your prescription and get medicines delivered quickly</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="service-item text-center">
+                        <i class="fas fa-stethoscope"></i>
+                        <h5>Medical Consultation</h5>
+                        <p>Talk to our healthcare professionals for medical advice</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="service-item text-center">
+                        <i class="fas fa-truck"></i>
+                        <h5>Fast Delivery</h5>
+                        <p>Quick and reliable delivery services for your medications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section - Achievements and numbers -->
+    <section class="stats">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="50000">0</span>
+                        <div class="stat-label">Happy Customers</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="10000">0</span>
+                        <div class="stat-label">Medicines Available</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="15">0</span>
+                        <div class="stat-label">Years of Experience</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <span class="stat-number" data-count="24">0</span>
+                        <div class="stat-label">Hours Service</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section - Call to action -->
+    <section class="cta">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2>Ready to Get Started?</h2>
+                    <p>Join thousands of satisfied customers and experience the best healthcare services</p>
+                    <?php if ($is_logged_in): ?>
+                        <a href="shop.php" class="btn-hero btn-secondary-hero">Start Shopping</a>
+                    <?php else: ?>
+                        <a href="login.php" class="btn-hero btn-secondary-hero">Create Account</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer - Site links and information -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>SAHANA MEDICALS</h4>
+                    <p>Your trusted healthcare partner providing quality medicines and pharmaceutical services.</p>
+                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                    <p><i class="fas fa-envelope"></i> info@sahanamedicals.com</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="shop.php">Shop</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="about_us.php">About Us</a></li>
+                        <li><a href="contact_us.php">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Online Pharmacy</a></li>
+                        <li><a href="#">Prescription Upload</a></li>
+                        <li><a href="#">Medical Consultation</a></li>
+                        <li><a href="#">Home Delivery</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <p>Follow us on social media for health tips and updates</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Sahana Medicals. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- External Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Document ready function
+        document.addEventListener('DOMContentLoaded', function () {
+            // Smooth scrolling for navigation links with offset adjustment
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    // Skip if it's not an internal page link
+                    if (this.getAttribute('href').startsWith('#')) {
+                        e.preventDefault();
+                        const target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            // Calculate the position with offset for navbar height
+                            const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Counter animation for statistics
+            function animateCounters() {
+                const counters = document.querySelectorAll('.stat-number');
+
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-count'));
+                    const increment = target / 100;
+                    let current = 0;
+
+                    const timer = setInterval(() => {
+                        current += increment;
+                        counter.textContent = Math.floor(current).toLocaleString();
+
+                        if (current >= target) {
+                            counter.textContent = target.toLocaleString();
+                            clearInterval(timer);
+                        }
+                    }, 20);
+                });
+            }
+
+            // Intersection Observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.classList.contains('stats')) {
+                            animateCounters();
+                        }
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe elements for animation
+            document.querySelectorAll('.feature-card, .service-item, .stats').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.6s ease-out';
+                observer.observe(el);
+            });
+
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 100) {
+                    navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                    navbar.style.backdropFilter = 'blur(15px)';
+                } else {
+                    navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                    navbar.style.backdropFilter = 'blur(10px)';
+                }
+            });
+
+            // Page load animation
+            document.body.style.opacity = '1';
+            document.body.style.transform = 'translateY(0)';
+        });
+
+        // Initial body styling for loading animation
+        document.body.style.opacity = '0';
+        document.body.style.transform = 'translateY(20px)';
+        document.body.style.transition = 'all 0.5s ease-out';
+    </script>
+</body>
+
+</html>
