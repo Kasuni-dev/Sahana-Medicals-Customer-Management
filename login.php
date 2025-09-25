@@ -4,10 +4,10 @@ require_once 'db_connection.php';
 
 // Redirect to appropriate page if already logged in
 if (isset($_SESSION['user_id'])) {
-    if ($_SESSION['user_role'] === 'admin') {
-        header("Location: admin_dashboard.html");
+    if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
+        header("Location: admin_dashboard.php");
     } else {
-        header("Location: home.html");
+        header("Location: profile.php");
     }
     exit();
 }
@@ -44,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Redirect based on role
                 if ($user['role'] === 'admin') {
-                    header("Location: admin_dashboard.html");
+                    header("Location: admin_dashboard.php");
                 } else {
-                    header("Location: home.html");
+                    header("Location: profile.php");
                 }
                 exit();
             } else {
